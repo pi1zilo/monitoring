@@ -6,11 +6,11 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  - job_name: 'bubunta'
+  - job_name: 'car_name'
     static_configs:
       - targets: ['x.x.x.x:9100']
       
-  - job_name: 'bubunta2'
+  - job_name: 'car_name'
     static_configs:
       - targets: ['x.x.x.x:9100']
       
