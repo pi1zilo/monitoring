@@ -104,7 +104,7 @@ prometheus/prometheus.yml
 
 ```bash
 # Скачиваем скрипт установки
-curl -fsSL https://raw.githubusercontent.com/pi1zilo/monitoring/main//install-node-exporter.sh
+curl -fsSL https://raw.githubusercontent.com/pi1zilo/monitoring/main/install-node-exporter.sh
 
 # Делаем исполняемым и запускаем
 chmod +x install-node-exporter.sh
