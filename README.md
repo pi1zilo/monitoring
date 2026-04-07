@@ -96,6 +96,80 @@ prometheus/prometheus.yml
 
 ---
 
+## 📥 Установка Node Exporter (на целевые хосты)
+
+> ⚠️ **Node Exporter должен быть установлен на каждом сервере, метрики которого вы хотите собирать.**
+
+### 🔹 Способ 1: Автоматически (скрипт) — Рекомендуется
+
+```bash
+# Скачиваем скрипт установки
+curl -fsSL https://raw.githubusercontent.com/pi1zilo/monitoring/main//install-node-exporter.sh
+
+# Делаем исполняемым и запускаем
+chmod +x install-node-exporter.sh
+sudo bash install-node-exporter.sh
+```
+
+✅ Скрипт автоматически:
+* Определит архитектуру системы
+* Скачает актуальный бинарник с GitHub
+* Создаст systemd-службу и включит автозапуск
+* Запустит Node Exporter на порту `9100`
+
+> 📄 Исходный код скрипта: [`install-node-exporter.sh`](install-node-exporter.sh)
+
+---
+
+### 🔹 Способ 2: Вручную (бинарный файл)
+
+```bash
+# 1. Создаём пользователя
+sudo useradd --no-create-home --shell /bin/false node_exporter
+
+# 2. Скачиваем и распаковываем (замените версию при необходимости)
+cd /tmp
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
+tar xzf node_exporter-*.tar.gz
+sudo cp node_exporter-*/node_exporter /usr/local/bin/
+sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+
+# 3. Создаём systemd-юнит
+sudo tee /etc/systemd/system/node_exporter.service > /dev/null <<EOF
+[Unit]
+Description=Prometheus Node Exporter
+After=network-online.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+ExecStart=/usr/local/bin/node_exporter
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# 4. Запускаем
+sudo systemctl daemon-reload
+sudo systemctl enable --now node_exporter
+```
+
+---
+
+### ✅ Проверка установки
+
+```bash
+# Статус службы
+systemctl status node_exporter
+
+# Проверка метрик (должны увидеть вывод)
+curl -s http://localhost:9100/metrics | head -n 10
+```
+
+---
+
+
 ### Безопасность Grafana
 
 В `docker-compose.yml` задайте свои учётные данные:
